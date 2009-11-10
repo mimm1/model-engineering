@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ASCII"?>
+<swml_metamodell:ContentModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:swml_metamodell="http://swml_metamodell/1.0" xsi:schemaLocation="http://swml_metamodell/1.0 SWML_Metamodell.ecore">
+  <Entities/>
+  <Enumerations name="PosAss">
+    <ownedLiteral name="full"/>
+    <ownedLiteral name="associate"/>
+  </Enumerations>
+  <Enumerations name="PosProf">
+    <ownedLiteral name="PreDoc"/>
+    <ownedLiteral name="PostDoc"/>
+  </Enumerations>
+</swml_metamodell:ContentModel>
