@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ASCII"?>
+<hypertextmodel:HypertextModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hypertextmodel="http://hypertextmodel/1.0" xsi:schemaLocation="http://hypertextmodel/1.0 HypertextModel.ecore">
+  <LinkJoinNodes>
+    <Link xsi:type="hypertextmodel:OK">
+      <Link/>
+    </Link>
+    <Link xsi:type="hypertextmodel:OK"/>
+  </LinkJoinNodes>
+  <WebPages xsi:type="hypertextmodel:staticPage" name="Homepage" homepage="//@WebPages.0"/>
+  <WebPages xsi:type="hypertextmodel:IndexPages" name="Personal Index"/>
+  <WebPages xsi:type="hypertextmodel:IndexPages" name="LVAIndex">
+    <content/>
+  </WebPages>
+  <WebPages xsi:type="hypertextmodel:EntityPages" name="LVAPruefungen"/>
+  <WebPages xsi:type="hypertextmodel:EntityPages" name="LVALeitung"/>
+  <WebPages xsi:type="hypertextmodel:EntityPages" name="LVADetails" InnerPage="//@WebPages.4 //@WebPages.3">
+    <Link xsi:type="hypertextmodel:ContextualLinks"/>
+  </WebPages>
+  <WebPages xsi:type="hypertextmodel:EntityPages" name="Pruefung erstellen"/>
+  <WebPages xsi:type="hypertextmodel:staticPage" name="Error"/>
+  <WebPages xsi:type="hypertextmodel:CreatePage">
+    <content/>
+  </WebPages>
+</hypertextmodel:HypertextModel>
