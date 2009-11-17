@@ -1,11 +1,74 @@
 <?xml version="1.0" encoding="ASCII"?>
 <hypertextmodel:WebModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hypertextmodel="http://hypertextmodel/1.0" xsi:schemaLocation="http://hypertextmodel/1.0 swml.ecore">
-  <hypertextmodels>
-    <WebPages xsi:type="hypertextmodel:CreatePage" name="" EntityType="//@contentmodels.0/@Entities.0"/>
+  <hypertextmodels homepage="//@hypertextmodels.0/@WebPages.0">
+    <WebPages xsi:type="hypertextmodel:staticPage" name="Institut">
+      <Link xsi:type="hypertextmodel:NonContextualLinks" TargetPage="//@hypertextmodels.0/@WebPages.1" Name=""/>
+      <Link xsi:type="hypertextmodel:NonContextualLinks" TargetPage="//@hypertextmodels.0/@WebPages.2"/>
+    </WebPages>
+    <WebPages xsi:type="hypertextmodel:IndexPages" name="PersonalIndex" EntityType="//@contentmodels.0/@Entities.0"/>
+    <WebPages xsi:type="hypertextmodel:IndexPages" name="LVAIndex" EntityType="//@contentmodels.0/@Entities.1">
+      <Link xsi:type="hypertextmodel:ContextualLinks" TargetPage="//@hypertextmodels.0/@WebPages.3"/>
+    </WebPages>
+    <WebPages xsi:type="hypertextmodel:EntityPages" name="LVADetails" EntityType="//@contentmodels.0/@Entities.1" InnerPage="//@hypertextmodels.0/@WebPages.5 //@hypertextmodels.0/@WebPages.4">
+      <Link xsi:type="hypertextmodel:ContextualLinks" TargetPage="//@hypertextmodels.0/@WebPages.6"/>
+      <Link xsi:type="hypertextmodel:ContextualLinks" TargetPage="//@hypertextmodels.0/@WebPages.7"/>
+      <Link xsi:type="hypertextmodel:ContextualLinks" TargetPage="//@hypertextmodels.0/@WebPages.8"/>
+    </WebPages>
+    <WebPages xsi:type="hypertextmodel:IndexPages" name="LVAPruefungen" EntityType="//@contentmodels.0/@Entities.2"/>
+    <WebPages xsi:type="hypertextmodel:EntityPages" name="LVALeitung" EntityType="//@contentmodels.0/@Entities.0"/>
+    <WebPages xsi:type="hypertextmodel:CreatePage" name="PruefungErstellen" EntityType="//@contentmodels.0/@Entities.2">
+      <OKLink TargetPage="//@hypertextmodels.0/@WebPages.10"/>
+      <KOLink TargetPage="//@hypertextmodels.0/@WebPages.9" Name=""/>
+    </WebPages>
+    <WebPages xsi:type="hypertextmodel:DeletePage" name="PruefungLoeschen" EntityType="//@contentmodels.0/@Entities.2">
+      <OKLink TargetPage="//@hypertextmodels.0/@WebPages.10"/>
+      <KOLink TargetPage="//@hypertextmodels.0/@WebPages.9"/>
+    </WebPages>
+    <WebPages xsi:type="hypertextmodel:UpdatePage" name="PruefungBearbeiten" EntityType="//@contentmodels.0/@Entities.2">
+      <OKLink TargetPage="//@hypertextmodels.0/@WebPages.10"/>
+      <KOLink TargetPage="//@hypertextmodels.0/@WebPages.9"/>
+    </WebPages>
+    <WebPages xsi:type="hypertextmodel:staticPage" name="ErrorPage"/>
+    <WebPages xsi:type="hypertextmodel:LinkJoinNode">
+      <Link xsi:type="hypertextmodel:ContextualLinks" TargetPage="//@hypertextmodels.0/@WebPages.3">
+        <Link Parameter="source.lva.Nummer"/>
+      </Link>
+    </WebPages>
   </hypertextmodels>
   <contentmodels>
+    <Enumerations name="PosAss">
+      <ownedLiteral name="preDoc"/>
+      <ownedLiteral name="postDoc"/>
+    </Enumerations>
+    <Enumerations name="PosProf">
+      <ownedLiteral name="full"/>
+      <ownedLiteral name="associate"/>
+    </Enumerations>
     <Entities name="Personal">
-      <Attributes name="name"/>
+      <Attributes name="Name"/>
+      <Attributes name="Email" Typ="Email"/>
+      <Attributes name="Sprechstunden"/>
+      <References Opposite="//@contentmodels.0/@Entities.1/@References.1" RefTo="//@contentmodels.0/@Entities.1" rolename="prof" lowerBound="1" upperBound="1"/>
+      <Child name="Professor">
+        <EnumAttribute Enums="//@contentmodels.0/@Enumerations.1" name="position"/>
+      </Child>
+      <Child name="Assistent">
+        <EnumAttribute Enums="//@contentmodels.0/@Enumerations.0" name="position"/>
+      </Child>
+    </Entities>
+    <Entities name="LVA">
+      <Attributes name="Nummer"/>
+      <Attributes name="Name"/>
+      <Attributes name="Beschreibung"/>
+      <References Opposite="//@contentmodels.0/@Entities.2/@References.0" RefTo="//@contentmodels.0/@Entities.2" rolename="lva" lowerBound="1" upperBound="1"/>
+      <References Opposite="//@contentmodels.0/@Entities.0/@References.0" RefTo="//@contentmodels.0/@Entities.0" rolename="lvas" upperBound="-1"/>
+    </Entities>
+    <Entities name="Pruefung">
+      <Attributes name="Id" Typ="Integer"/>
+      <Attributes name="Datum" Typ="Date"/>
+      <Attributes name="Uhrzeit" Typ="Time"/>
+      <Attributes name="Dauer" Typ="Float"/>
+      <References Opposite="//@contentmodels.0/@Entities.1/@References.0" RefTo="//@contentmodels.0/@Entities.1" rolename="pruefungen" upperBound="-1"/>
     </Entities>
   </contentmodels>
 </hypertextmodel:WebModel>
