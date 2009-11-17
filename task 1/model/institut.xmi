@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ASCII"?>
+<hypertextmodel:WebModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hypertextmodel="http://hypertextmodel/1.0" xsi:schemaLocation="http://hypertextmodel/1.0 swml.ecore">
+  <hypertextmodels>
+    <WebPages xsi:type="hypertextmodel:CreatePage" name="" EntityType="//@contentmodels.0/@Entities.0"/>
+  </hypertextmodels>
+  <contentmodels>
+    <Entities name="Personal">
+      <Attributes name="name"/>
+    </Entities>
+  </contentmodels>
+</hypertextmodel:WebModel>
