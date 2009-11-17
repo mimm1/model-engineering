@@ -12,8 +12,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="ContentModel">
     <eStructuralFeatures xsi:type="ecore:EReference" name="Enumerations" upperBound="-1"
         eType="#//Enumeration" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Entities" upperBound="-1"
-        eType="#//Entity" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Entities" lowerBound="1"
+        upperBound="-1" eType="#//Entity" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Entity">
     <eStructuralFeatures xsi:type="ecore:EReference" name="EnumAttribute" upperBound="-1"
@@ -58,10 +58,12 @@
     <eLiterals name="Float" value="2"/>
     <eLiterals name="Boolean" value="3"/>
     <eLiterals name="Email" value="4"/>
+    <eLiterals name="Date" value="5"/>
+    <eLiterals name="Time" value="6"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="HypertextModel">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="WebPages" upperBound="-1"
-        eType="#//WebPage" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="WebPages" lowerBound="1"
+        upperBound="-1" eType="#//WebPage" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="homepage" lowerBound="1"
         eType="#//staticPage"/>
   </eClassifiers>
@@ -74,15 +76,11 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="Links" upperBound="-1"
         eType="#//LinkKat1" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="staticPage" eSuperTypes="#//WebPage">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Content" upperBound="-1"
-        eType="#//staticContent"/>
-  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="staticPage" eSuperTypes="#//WebPage"/>
   <eClassifiers xsi:type="ecore:EClass" name="dynamicPage" abstract="true" eSuperTypes="#//WebPage">
     <eStructuralFeatures xsi:type="ecore:EReference" name="EntityType" lowerBound="1"
-        upperBound="-1" eType="#//Entity"/>
+        eType="#//Entity"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EDataType" name="staticContent" instanceTypeName="staticContent"/>
   <eClassifiers xsi:type="ecore:EClass" name="EntityPages" eSuperTypes="#//dynamicPage">
     <eStructuralFeatures xsi:type="ecore:EReference" name="InnerPage" upperBound="-1"
         eType="#//dynamicPage"/>
