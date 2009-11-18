@@ -53,8 +53,8 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Datentyp">
-    <eLiterals name="String"/>
     <eLiterals name="Integer" value="1"/>
+    <eLiterals name="String"/>
     <eLiterals name="Float" value="2"/>
     <eLiterals name="Boolean" value="3"/>
     <eLiterals name="Email" value="4"/>
