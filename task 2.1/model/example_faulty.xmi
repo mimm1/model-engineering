@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="ASCII"?>
+<swml:WebApplication xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:swml="http://swml" xsi:schemaLocation="http://swml swml.ecore" name="Institut">
+  <contentModel>
+    <enumerations name="PosAss">
+      <literals name="preDoc"/>
+      <literals name="postDoc"/>
+    </enumerations>
+    <enumerations name="PosProf">
+      <literals name="full"/>
+      <literals name="associate"/>
+    </enumerations>
+    <enumerations name="PosAss">
+      <literals name="ProjAss"/>
+    </enumerations>
+    <entityType name="Personal" superEntityType="//@contentModel/@entityType.0" isAbstract="true">
+      <attribute name="Email" type="Email"/>
+      <attribute name="Sprechstunden"/>
+      <attribute name="Email"/>
+      <id name="name"/>
+      <relationship name="lvas" upper="-1" opposite="//@contentModel/@entityType.3/@relationship.0" target="//@contentModel/@entityType.3"/>
+    </entityType>
+    <entityType name="Professor" superEntityType="//@contentModel/@entityType.0">
+      <attribute name="Position" EnumType="//@contentModel/@enumerations.1"/>
+      <id name="svnr"/>
+    </entityType>
+    <entityType name="Assistent" superEntityType="//@contentModel/@entityType.0">
+      <attribute name="Position" EnumType="//@contentModel/@enumerations.0"/>
+    </entityType>
+    <entityType name="LVA">
+      <attribute name="Name"/>
+      <attribute name="Beschreibung"/>
+      <attribute name="Nummer" type="Integer"/>
+      <id name="Nummer"/>
+      <relationship name="prof" lower="1" opposite="//@contentModel/@entityType.0/@relationship.0" target="//@contentModel/@entityType.0"/>
+      <relationship name="pruefungen" upper="-2" lower="-3" opposite="//@contentModel/@entityType.4/@relationship.0" target="//@contentModel/@entityType.4"/>
+    </entityType>
+    <entityType name="Pruefung">
+      <attribute name="Datum" type="Date"/>
+      <attribute name="Uhrzeit" type="Time"/>
+      <attribute name="Dauer" type="Float"/>
+      <id name="Id" type="Integer"/>
+      <relationship name="lva" upper="1" lower="1" opposite="//@contentModel/@entityType.3/@relationship.1" target="//@contentModel/@entityType.3"/>
+    </entityType>
+    <entityType name="LVA">
+      <attribute name="Uebung" type="Boolean"/>
+    </entityType>
+  </contentModel>
+  <hyperTextModel>
+    <page xsi:type="swml:IndexPage" name="PersonalIndex" displayedEntityType="//@contentModel/@entityType.0"/>
+    <page xsi:type="swml:IndexPage" name="LVAIndex" displayedEntityType="//@contentModel/@entityType.3">
+      <link xsi:type="swml:ContextualLink" target="//@hyperTextModel/@page.2"/>
+    </page>
+    <page xsi:type="swml:EntityPage" name="LVADetails" displayedEntityType="//@contentModel/@entityType.3">
+      <link xsi:type="swml:KOLink" target="//@hyperTextModel/@page.6"/>
+      <link xsi:type="swml:OKLink" target="//@hyperTextModel/@homepage"/>
+      <innerPage xsi:type="swml:EntityPage" name="LVALeitung" displayedEntityType="//@contentModel/@entityType.0"/>
+      <innerPage xsi:type="swml:IndexPage" name="LVAPruefungen" displayedEntityType="//@contentModel/@entityType.4">
+        <link xsi:type="swml:ContextualLink" target="//@hyperTextModel/@page.4"/>
+        <link xsi:type="swml:ContextualLink" target="//@hyperTextModel/@page.5"/>
+        <link xsi:type="swml:ContextualLink" target="//@hyperTextModel/@page.3"/>
+      </innerPage>
+    </page>
+    <page xsi:type="swml:CreatePage" name="PruefungErstellen" displayedEntityType="//@contentModel/@entityType.4">
+      <link xsi:type="swml:KOLink" target="//@hyperTextModel/@page.6"/>
+      <link xsi:type="swml:OKLink" target="//@hyperTextModel/@page.7"/>
+      <link xsi:type="swml:OKLink" target="//@hyperTextModel/@homepage"/>
+    </page>
+    <page xsi:type="swml:DeletePage" name="PruefungLoeschen" displayedEntityType="//@contentModel/@entityType.4">
+      <link xsi:type="swml:KOLink" target="//@hyperTextModel/@page.6"/>
+      <link xsi:type="swml:OKLink" target="//@hyperTextModel/@page.7"/>
+    </page>
+    <page xsi:type="swml:UpdatePage" name="PruefungBearbeiten" displayedEntityType="//@contentModel/@entityType.4">
+      <link xsi:type="swml:KOLink" target="//@hyperTextModel/@page.6"/>
+      <link xsi:type="swml:OKLink" target="//@hyperTextModel/@page.7"/>
+    </page>
+    <page xsi:type="swml:StaticPage" name="ErrorPage"/>
+    <page xsi:type="swml:LinkJoinNode" name="JoinNode">
+      <link xsi:type="swml:ContextualLink" target="//@hyperTextModel/@page.2">
+        <parameter ValueSpec="source.lva.Nummer"/>
+      </link>
+      <link xsi:type="swml:OKLink" target="//@hyperTextModel/@page.2"/>
+    </page>
+    <homepage name="Institut">
+      <link xsi:type="swml:NonContextualLink" target="//@hyperTextModel/@page.0">
+        <parameter ValueSpec="param1"/>
+      </link>
+      <link xsi:type="swml:NonContextualLink" target="//@hyperTextModel/@page.1"/>
+    </homepage>
+  </hyperTextModel>
+</swml:WebApplication>
