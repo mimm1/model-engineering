@@ -1,0 +1,31 @@
+context EntityType (Entity nicht von sich selbst erben)
+inv dontinheritbyitself: self.superEntityType -> select(entity|entity = self) -> size() = 0
+
+context EntityType (Attribut -> eindeutiger Name)
+inv uniqueattributename: self.attribute  -> forAll(a1, a2 | a1 <> a2 implies a1.name <> a2.name)
+
+context ContextModel
+inv uniquenameforentites: self.entityType->forAll(e1, e2 |
+e1 <> e2 implies e1.name <> e2.name)
+
+context ContextModel
+inv uniquenameforenums: self.enumerations->forAll(p1, p2 |
+p1 <> p2 implies p1.name <> p2.name)
+
+context Attribute
+inv enumortyponotboth:
+self.EnumType ->notEmpty() xor self.type ->notEmpty()
+
+context NoncontextualLink
+inv noparameters:
+self -> forAll(parameter ->isEmpty())
+
+context LinkJoinNode
+inv justoneoutgoinglink:
+self -> forAll(link -> size() <= 1)
+
+context ContentModel
+inv noidforsubentity:
+self.entityType->select(superEntityType->notEmpty()) -> forAll(id -> isEmpty())
+
+fehlen noch: 5,9 und 10
