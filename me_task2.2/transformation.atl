@@ -1,7 +1,7 @@
 -- @path smvcml=/me_task2.2/metamodels/smvcml.ecore
 -- @path swml=/me_task2.2/metamodels/swml.ecore
 
-module transformation2;
+module transformation;
 create OUT : smvcml from IN : swml;
 
 rule Attribute2Attribute{
@@ -22,6 +22,6 @@ rule EntityType2Entity{
 		out: smvcml!Entity(
 		
 			name <- e.name
-						
+		
 	)
 }
