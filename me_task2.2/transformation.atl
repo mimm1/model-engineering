@@ -1,0 +1,27 @@
+-- @path smvcml=/me_task2.2/metamodels/smvcml.ecore
+-- @path swml=/me_task2.2/metamodels/swml.ecore
+
+module transformation2;
+create OUT : smvcml from IN : swml;
+
+rule Attribute2Attribute{
+	from
+		e: swml!Attribute
+	to
+		out: smvcml!Attribute(
+	name <- e.name
+				
+	)
+}
+
+
+rule EntityType2Entity{
+	from
+		e: swml!EntityType
+	to
+		out: smvcml!Entity(
+		
+			name <- e.name
+						
+	)
+}

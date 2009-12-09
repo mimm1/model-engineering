@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SMVC:SMVCApplication xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SMVC="http://smvc" name="Institut">
+  <homeController url="/Institut" operation="forward">
+    <page title="Institut">
+      <links url="/PersonalIndex"/>
+      <links url="/LVAIndex"/>
+      <view/>
+    </page>
+  </homeController>
+  <controller xsi:type="SMVC:EntityController" url="/LVADetails" operation="readONE" dao="//@daos.3">
+    <subController xsi:type="SMVC:EntityController" url="/LVALeitung" operation="readONE" dao="//@daos.0">
+      <page title="LVALeitung">
+        <view>
+          <components xsi:type="SMVC:Form" entity="//@entities.0"/>
+        </view>
+      </page>
+    </subController>
+    <subController xsi:type="SMVC:EntityController" url="/LVAPruefungen" operation="readALL" dao="//@daos.4">
+      <page title="LVAPruefungen">
+        <view>
+          <components xsi:type="SMVC:List" entity="//@entities.4">
+            <supportedOperations operationKind="update" url="/PruefungBearbeiten"/>
+            <supportedOperations operationKind="delete" url="/PruefungLoeschen"/>
+            <supportedOperations url="/PruefungErstellen"/>
+          </components>
+        </view>
+      </page>
+    </subController>
+    <page title="LVADetails">
+      <view>
+        <components xsi:type="SMVC:Form" entity="//@entities.3"/>
+      </view>
+    </page>
+  </controller>
+  <controller xsi:type="SMVC:EntityController" url="/PersonalIndex" operation="readALL" dao="//@daos.0">
+    <page title="PersonalIndex">
+      <view>
+        <components xsi:type="SMVC:List" entity="//@entities.0"/>
+      </view>
+    </page>
+  </controller>
+  <controller xsi:type="SMVC:EntityController" url="/LVAIndex" operation="readALL" dao="//@daos.3">
+    <page title="LVAIndex">
+      <view>
+        <components xsi:type="SMVC:List" entity="//@entities.3">
+          <supportedOperations operationKind="read" url="/LVADetails"/>
+        </components>
+      </view>
+    </page>
+  </controller>
+  <controller xsi:type="SMVC:EntityController" url="/PruefungErstellen" dao="//@daos.4" returnOKURL="/LVADetails" returnKOURL="/ErrorPage">
+    <page title="PruefungErstellen">
+      <view>
+        <components xsi:type="SMVC:Form" entity="//@entities.4"/>
+      </view>
+    </page>
+  </controller>
+  <controller xsi:type="SMVC:EntityController" url="/PruefungLoeschen" operation="delete" dao="//@daos.4" returnOKURL="/LVADetails" returnKOURL="/ErrorPage">
+    <page title="PruefungLoeschen">
+      <view>
+        <components xsi:type="SMVC:Form" entity="//@entities.4"/>
+      </view>
+    </page>
+  </controller>
+  <controller xsi:type="SMVC:EntityController" url="/PruefungBearbeiten" operation="update" dao="//@daos.4" returnOKURL="/LVADetails" returnKOURL="/ErrorPage">
+    <page title="PruefungBearbeiten">
+      <view>
+        <components xsi:type="SMVC:Form" entity="//@entities.4"/>
+      </view>
+    </page>
+  </controller>
+  <controller url="/ErrorPage" operation="forward">
+    <page title="ErrorPage">
+      <view/>
+    </page>
+  </controller>
+  <daos name="PersonalDAO" forEntity="//@entities.0"/>
+  <daos name="ProfessorDAO" forEntity="//@entities.1" showDirectInstancesOnly="true"/>
+  <daos name="AssistentDAO" forEntity="//@entities.2" showDirectInstancesOnly="true"/>
+  <daos name="LVADAO" forEntity="//@entities.3" showDirectInstancesOnly="true"/>
+  <daos name="PruefungDAO" forEntity="//@entities.4" showDirectInstancesOnly="true"/>
+  <entities name="Personal">
+    <attributes name="Email"/>
+    <attributes name="Sprechstunden"/>
+    <attributes name="name" type="OID"/>
+    <attributes name="lvas" type="VOID" multiValued="true" complexType="//@entities.3"/>
+  </entities>
+  <entities name="Professor">
+    <attributes name="Position"/>
+    <attributes name="Email"/>
+    <attributes name="Sprechstunden"/>
+    <attributes name="name" type="OID"/>
+    <attributes name="lvas" type="VOID" multiValued="true" complexType="//@entities.3"/>
+  </entities>
+  <entities name="Assistent">
+    <attributes name="Position"/>
+    <attributes name="Email"/>
+    <attributes name="Sprechstunden"/>
+    <attributes name="name" type="OID"/>
+    <attributes name="lvas" type="VOID" multiValued="true" complexType="//@entities.3"/>
+  </entities>
+  <entities name="LVA">
+    <attributes name="Name"/>
+    <attributes name="Beschreibung"/>
+    <attributes name="Nummer" type="OID"/>
+    <attributes name="prof" type="VOID" complexType="//@entities.0"/>
+    <attributes name="pruefungen" type="VOID" multiValued="true" complexType="//@entities.4"/>
+  </entities>
+  <entities name="Pruefung">
+    <attributes name="Datum"/>
+    <attributes name="Uhrzeit"/>
+    <attributes name="Dauer" type="DOUBLE"/>
+    <attributes name="Id" type="OID"/>
+    <attributes name="lva" type="VOID" complexType="//@entities.3"/>
+  </entities>
+</SMVC:SMVCApplication>
