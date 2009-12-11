@@ -4,16 +4,17 @@
 module transformation;
 create OUT : smvcml from IN : swml;
 
-rule Attribute2Attribute{
+rule WebApplication2SMVCApplication{
 	from
-		e: swml!Attribute
+		e: swml!WebApplication
+		
 	to
-		out: smvcml!Attribute(
-	name <- e.name
-				
-	)
+		out: smvcml!SMVCApplication(
+			name <- e.name,
+			entities <- e.contentModel
+		)
+	
 }
-
 
 rule EntityType2Entity{
 	from
@@ -21,7 +22,33 @@ rule EntityType2Entity{
 	to
 		out: smvcml!Entity(
 		
-			name <- e.name
+			name <- e.name,
+			attributes <- e.attribute,
+			attributes <- e.id
+			
 		
 	)
 }
+
+rule Attribute2Attribute{
+	from
+		e: swml!Attribute
+	to
+		out: smvcml!Attribute(
+			
+			name <- e.name
+					
+				
+	)
+}
+
+rule AttributeType2SWMLType{
+	from 
+		e: swml!SWMLType
+	to
+		out: smvcml!AttributeType(
+					
+		)
+		
+}
+
