@@ -4,14 +4,27 @@
 module transformation;
 create OUT : smvcml from IN : swml;
 
+
+-- CONTENTMODEL
+
+-- Fehlend: DAOS gehören in die selbe Ebene wie Entities!
+--			Entity Professor und Assisten erben die Attribute von Professor (superEntity!)
+--			Typ der Attributen stimmen nicht! Enumeration "AttributeType" muss noch rein!
+--			MultiValued und ComplexType fehlen noch
+--			Bei den DAOS: For Entity und ShowDirectInstancesOnly stimmen glaub ich nicht bzw.
+--			sind sie in der Musterlösung anders!
+
+
 rule WebApplication2SMVCApplication{
 	from
-		e: swml!WebApplication
+		w: swml!WebApplication,
+		c: swml!ContentModel
 		
 	to
 		out: smvcml!SMVCApplication(
-			name <- e.name,
-			entities <- e.contentModel
+			name <- w.name,	
+			entities <- c.entityType,
+			daos <- c.entityType
 		)
 	
 }
@@ -19,36 +32,66 @@ rule WebApplication2SMVCApplication{
 rule EntityType2Entity{
 	from
 		e: swml!EntityType
+		
+		
 	to
 		out: smvcml!Entity(
 		
 			name <- e.name,
 			attributes <- e.attribute,
-			attributes <- e.id
+			attributes <- e.id,
+			attributes <- e.relationship
 			
+		),
 		
-	)
+		o: smvcml!DataAccessObject(
+			
+			name <- e.name+'DAO',
+			forEntity <- e.superEntityType,
+			showDirectInstancesOnly <- e.isAbstract
+		)
+
 }
+
+
 
 rule Attribute2Attribute{
 	from
-		e: swml!Attribute
+		a: swml!Attribute
+	
 	to
 		out: smvcml!Attribute(
 			
-			name <- e.name
-					
+			name <- a.name
+		
 				
 	)
 }
 
-rule AttributeType2SWMLType{
-	from 
-		e: swml!SWMLType
-	to
-		out: smvcml!AttributeType(
-					
-		)
+rule Attribute2Relationship{
+	from
 		
+		r: swml!Relationship
+	to
+		out: smvcml!Attribute(
+			
+			
+			name <- r.name
+						
+	)
 }
+-- AB HIER HYPERTEXTMODEL
+
+rule Controller2StaticPage{
+	from
+		s: swml!StaticPage
+	to
+		out: smvcml!Controller(
+			url <- '/'+s.name	
+		
+		)
+	
+}
+
+
 
