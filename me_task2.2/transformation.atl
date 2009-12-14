@@ -7,8 +7,7 @@ create OUT : smvcml from IN : swml;
 
 -- CONTENTMODEL
 
--- Fehlend: DAOS gehören in die selbe Ebene wie Entities!
---			Entity Professor und Assisten erben die Attribute von Professor (superEntity!)
+-- Fehlend: Entity Professor und Assisten erben die Attribute von Professor (superEntity!)
 --			Typ der Attributen stimmen nicht! Enumeration "AttributeType" muss noch rein!
 --			MultiValued und ComplexType fehlen noch
 --			Bei den DAOS: For Entity und ShowDirectInstancesOnly stimmen glaub ich nicht bzw.
@@ -29,9 +28,12 @@ rule WebApplication2SMVCApplication{
 	
 }
 
+
+
+
 rule EntityType2Entity{
 	from
-		e: swml!EntityType
+		e: swml!EntityType(if e.superEntityType.oclIsUndefined() then true else false endif)
 		
 		
 	to
@@ -42,14 +44,36 @@ rule EntityType2Entity{
 			attributes <- e.id,
 			attributes <- e.relationship
 			
+			--if 3<2 then true else false endif
+			
+			
 		),
 		
-		o: smvcml!DataAccessObject(
+
+		o: smvcml!DataAccessObject (
 			
 			name <- e.name+'DAO',
-			forEntity <- e.superEntityType,
-			showDirectInstancesOnly <- e.isAbstract
+			forEntity <- e,
+			showDirectInstancesOnly <- not e.isAbstract
 		)
+	--do{	
+--			if(e.superEntityType) {
+				
+--			}
+			
+		
+			--if e.superEntityType
+			--then 
+			--	attributes <- e.superEntityType.attribute
+			--else
+			--	'this case should never occure'
+			--endif
+			--then attributes <- e.superEntityType.attribute,				
+			--endif
+				
+			
+--}		
+	
 
 }
 
