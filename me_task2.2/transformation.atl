@@ -8,8 +8,7 @@ create OUT : smvcml from IN : swml;
 -- CONTENTMODEL
 
 -- Fehlend: Entity Professor und Assisten erben die Attribute von Professor (superEntity!)
---			Typ der Attributen stimmen nicht! Enumeration "AttributeType" muss noch rein!
---			MultiValued und ComplexType fehlen noch
+--			ID Attribute zu OID mapping fehlt
 
 helper context swml!EntityType def :
 	allAttributes : Sequence(swml!Attribute) =
