@@ -11,7 +11,32 @@ create OUT : smvcml from IN : swml;
 --			Typ der Attributen stimmen nicht! Enumeration "AttributeType" muss noch rein!
 --			MultiValued und ComplexType fehlen noch
 
+helper context swml!EntityType def :
+	allAttributes : Sequence(swml!Attribute) =
+	self.attribute->union(
+		if not self.superEntityType.oclIsUndefined() then
+		self.superEntityType.allAttributes->select(attribute |
+		not self.attribute->exists(at | at.name = attribute.name)
+		)
+		else Sequence {}
+		endif
+	)->flatten();
 
+helper context swml!EntityType def :
+	allRelationships : Sequence(swml!Relationship) =
+	let defAssoc : swml!Relationship =
+		swml!Relationship.allInstances()->select(assoc |
+		assoc.entityType = self) in
+		defAssoc->union(
+		if not self.superEntityType.oclIsUndefined() then
+		self.superEntityType.allRelationships
+		else Sequence {}
+		endif
+	)->flatten();
+
+helper context swml!EntityType def :
+	allIDAttributes : Sequence(swml!Attribute) =
+		self.id->union(Sequence{})->flatten();
 
 rule WebApplication2SMVCApplication{
 	from
@@ -39,12 +64,13 @@ rule EntityType2Entity{
 		
 		
 	to
-		out: smvcml!Entity(
-		
+		out: smvcml!Entity (
 			name <- e.name,
-			attributes <- e.attribute,
+			attributes <- e.allAttributes,
+			--attributes <- if e.superEntityType.
+			--attributes <- e.superEntityType.id,
 			attributes <- e.id,
-			attributes <- e.relationship
+			attributes <- e.allRelationships
 			
 		
 		),
@@ -87,9 +113,9 @@ rule Attribute2Attribute{
 
 	to
 		out: smvcml!Attribute(
-
+			
 			name <- a.name,
-			type <- if a.type.toString() = 'String' or a.type.toString() = 'Date' or a.type.toString() = 'Time' or a.type.toString() = 'Email' then #VARCHAR 
+			type <- if a.type.toString() = 'String' or not a.EnumType.oclIsUndefined() or a.type.toString() = 'Date' or a.type.toString() = 'Time' or a.type.toString() = 'Email' then #VARCHAR 
 			else if a.type.toString() = 'Float' then #DOUBLE else #BIGINTEGER endif endif,
 			multiValued <-	false 
 			--type <- a
@@ -97,7 +123,7 @@ rule Attribute2Attribute{
 	)
 }
 
-rule Attribute2Relationship{
+rule Relationship2Attribute{
 	from
 		
 		r: swml!Relationship
@@ -106,8 +132,9 @@ rule Attribute2Relationship{
 			
 			
 			name <- r.name,
-			multiValued <- if r.upper <= -1 then true else false endif	
-			--type <- false
+			multiValued <- if r.upper <= -1 then true else false endif,	
+			type <- #VOID,
+			complexType <- r.target
 	)
 }
 -- AB HIER HYPERTEXTMODEL
