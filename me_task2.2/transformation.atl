@@ -10,20 +10,22 @@ create OUT : smvcml from IN : swml;
 -- Fehlend: Entity Professor und Assisten erben die Attribute von Professor (superEntity!)
 --			Typ der Attributen stimmen nicht! Enumeration "AttributeType" muss noch rein!
 --			MultiValued und ComplexType fehlen noch
---			Bei den DAOS: For Entity und ShowDirectInstancesOnly stimmen glaub ich nicht bzw.
---			sind sie in der Musterlösung anders!
+
 
 
 rule WebApplication2SMVCApplication{
 	from
 		w: swml!WebApplication,
-		c: swml!ContentModel
+		c: swml!ContentModel,
+		h: swml!HypertextModel
 		
 	to
 		out: smvcml!SMVCApplication(
 			name <- w.name,	
 			entities <- c.entityType,
-			daos <- c.entityType
+			daos <- c.entityType,
+			homeController <- h.homepage,
+			controller <- h.page
 		)
 	
 }
@@ -44,7 +46,7 @@ rule EntityType2Entity{
 			attributes <- e.id,
 			attributes <- e.relationship
 			
-			
+		
 		),
 		
 
@@ -72,6 +74,7 @@ rule EntityType2Entity{
 			
 --}		
 	
+	
 
 }
 
@@ -79,7 +82,8 @@ rule EntityType2Entity{
 
 rule Attribute2Attribute{
 	from
-		a: swml!Attribute
+		a: swml!Attribute,
+		r: swml!EntityType
 
 	to
 		out: smvcml!Attribute(
@@ -89,6 +93,7 @@ rule Attribute2Attribute{
 			else if a.type.toString() = 'Float' then #DOUBLE else #BIGINTEGER endif endif,
 			multiValued <-	false 
 			--type <- a
+
 	)
 }
 
@@ -107,17 +112,56 @@ rule Attribute2Relationship{
 }
 -- AB HIER HYPERTEXTMODEL
 
+
+
+
 rule Controller2StaticPage{
 	from
-		s: swml!StaticPage
+		s: swml!StaticPage 
+		--(s.oclIsTypeOf(source!StaticPage))
+		
 
 	to
 		out: smvcml!Controller(
-			url <- '/'+s.name	
+			url <- '/'+s.name			
+			
 		)
 		
 	
 }
+-- url vererben funkt nicht!!
+rule EntityController2DynamicPage {
+	from
+		
+		d: swml!DynamicPage
+--		ok: swml!OKLink,
+--		ko: swml!KOLink
+	to
+		out: smvcml!EntityController(
+			
+--			returnOKURL <- ok.source,
+--			returnKOURL <- ko.source,
+			dao <- d.displayedEntityType,
+			url <- '/'+d.name
+			
+		)
+	
+}
 
-
-
+rule Page2Page {
+	from
+		--d: swml!DynamicPage,
+		--s: swml!StaticPage,
+		--h: swml!HypertextModel
+		p: swml!Page 
+		(p.oclIsTypeOf(swml!Page))
+		
+	to
+		out: smvcml!Page(
+			--title <- d.name,
+			--title <- s.name
+			title <- p.name
+		
+		)
+	
+}
