@@ -158,7 +158,7 @@ rule Page2Page {
 	
 }
 
-rule Controller2StaticPage{
+rule StaticPage2Controller{
 	from
 		s: swml!StaticPage 
 --		(s.oclIsTypeOf(source!StaticPage))
@@ -173,7 +173,7 @@ rule Controller2StaticPage{
 	
 }
 -- url vererben funkt nicht!!
-rule EntityController2DynamicPage {
+rule DynamicPage2EntityController {
 	from
 		
 		d: swml!DynamicPage
