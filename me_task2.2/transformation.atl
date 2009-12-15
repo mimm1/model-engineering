@@ -33,7 +33,7 @@ rule WebApplication2SMVCApplication{
 
 rule EntityType2Entity{
 	from
-		e: swml!EntityType(if e.superEntityType.oclIsUndefined() then true else false endif)
+		e: swml!EntityType
 		
 		
 	to
@@ -43,8 +43,6 @@ rule EntityType2Entity{
 			attributes <- e.attribute,
 			attributes <- e.id,
 			attributes <- e.relationship
-			
-			--if 3<2 then true else false endif
 			
 			
 		),
@@ -82,13 +80,15 @@ rule EntityType2Entity{
 rule Attribute2Attribute{
 	from
 		a: swml!Attribute
-	
+
 	to
 		out: smvcml!Attribute(
-			
-			name <- a.name
-		
-				
+
+			name <- a.name,
+			type <- if a.type.toString() = 'String' or a.type.toString() = 'Date' or a.type.toString() = 'Time' or a.type.toString() = 'Email' then #VARCHAR 
+			else if a.type.toString() = 'Float' then #DOUBLE else #BIGINTEGER endif endif,
+			multiValued <-	false 
+			--type <- a
 	)
 }
 
@@ -100,8 +100,9 @@ rule Attribute2Relationship{
 		out: smvcml!Attribute(
 			
 			
-			name <- r.name
-						
+			name <- r.name,
+			multiValued <- if r.upper <= -1 then true else false endif	
+			--type <- false
 	)
 }
 -- AB HIER HYPERTEXTMODEL
@@ -109,11 +110,12 @@ rule Attribute2Relationship{
 rule Controller2StaticPage{
 	from
 		s: swml!StaticPage
+
 	to
 		out: smvcml!Controller(
 			url <- '/'+s.name	
-		
 		)
+		
 	
 }
 
