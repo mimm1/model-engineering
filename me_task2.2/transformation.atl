@@ -82,8 +82,8 @@ rule EntityType2Entity{
 
 rule Attribute2Attribute{
 	from
-		a: swml!Attribute,
-		r: swml!EntityType
+		a: swml!Attribute
+	--	r: swml!EntityType
 
 	to
 		out: smvcml!Attribute(
@@ -113,12 +113,29 @@ rule Attribute2Relationship{
 -- AB HIER HYPERTEXTMODEL
 
 
-
+rule Page2Page {
+	from
+		--d: swml!DynamicPage,
+		--s: swml!StaticPage
+		--h: swml!HypertextModel
+		
+		p: swml!Page 
+		(p.oclIsTypeOf(swml!Page))
+		
+	to
+		out: smvcml!Page(
+			--title <- d.name,
+--			title <- s.name
+			title <- p.name
+		
+		)
+	
+}
 
 rule Controller2StaticPage{
 	from
 		s: swml!StaticPage 
-		--(s.oclIsTypeOf(source!StaticPage))
+--		(s.oclIsTypeOf(source!StaticPage))
 		
 
 	to
@@ -134,12 +151,20 @@ rule EntityController2DynamicPage {
 	from
 		
 		d: swml!DynamicPage
---		ok: swml!OKLink,
+		
+--		ok: swml!OKLink
 --		ko: swml!KOLink
+--		p: swml!Parameter
+		
 	to
 		out: smvcml!EntityController(
 			
---			returnOKURL <- ok.source,
+--			returnOKURL <- if d.link = true then
+--				d.name
+--			 else
+--			 	''
+--			endif,
+			
 --			returnKOURL <- ko.source,
 			dao <- d.displayedEntityType,
 			url <- '/'+d.name
@@ -148,20 +173,4 @@ rule EntityController2DynamicPage {
 	
 }
 
-rule Page2Page {
-	from
-		--d: swml!DynamicPage,
-		--s: swml!StaticPage,
-		--h: swml!HypertextModel
-		p: swml!Page 
-		(p.oclIsTypeOf(swml!Page))
-		
-	to
-		out: smvcml!Page(
-			--title <- d.name,
-			--title <- s.name
-			title <- p.name
-		
-		)
-	
-}
+
