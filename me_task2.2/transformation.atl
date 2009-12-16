@@ -37,6 +37,8 @@ helper context swml!EntityType def :
 	allIDAttributes : Sequence(swml!Attribute) =
 		self.id->union(Sequence{})->flatten();
 
+
+
 rule WebApplication2SMVCApplication{
 	from
 		w: swml!WebApplication,
@@ -47,7 +49,7 @@ rule WebApplication2SMVCApplication{
 		out: smvcml!SMVCApplication(
 			name <- w.name,	
 			entities <- c.entityType,
-			daos <- c.entityType,
+			--daos <- thisModule.resolveTemp(c.entityType, 'o'),
 			homeController <- h.homepage,
 			controller <- h.page
 		)
@@ -55,14 +57,13 @@ rule WebApplication2SMVCApplication{
 }
 
 
-
-
 rule EntityType2Entity{
 	from
 		e: swml!EntityType
 		
 		
-	to
+	to	
+		
 		out: smvcml!Entity (
 			name <- e.name,
 			attributes <- e.allAttributes,
@@ -70,17 +71,17 @@ rule EntityType2Entity{
 			--attributes <- e.superEntityType.id,
 			attributes <- e.id,
 			attributes <- e.allRelationships
-			
-		
 		),
 		
-
 		o: smvcml!DataAccessObject (
 			
 			name <- e.name+'DAO',
 			forEntity <- e,
 			showDirectInstancesOnly <- not e.isAbstract
 		)
+
+
+
 	--do{	
 --			if(e.superEntityType) {
 				
@@ -99,9 +100,9 @@ rule EntityType2Entity{
 			
 --}		
 	
-	
+}	
 
-}
+
 
 
 
@@ -139,52 +140,35 @@ rule Relationship2Attribute{
 -- AB HIER HYPERTEXTMODEL
 
 
-rule Page2Page {
-	from
-		--d: swml!DynamicPage,
-		--s: swml!StaticPage
-		--h: swml!HypertextModel
-		
+rule StaticPage2Controller {
+	from		
 		p: swml!Page 
-		(p.oclIsTypeOf(swml!Page))
+		(p.oclIsTypeOf(swml!StaticPage))
 		
 	to
 		out: smvcml!Page(
-			--title <- d.name,
---			title <- s.name
 			title <- p.name
 		
+		),
+		o: smvcml!Controller (
+			url <- '/'+ p.name,
+			page <- p
 		)
 	
 }
 
-rule StaticPage2Controller{
-	from
-		s: swml!StaticPage 
---		(s.oclIsTypeOf(source!StaticPage))
-		
-
-	to
-		out: smvcml!Controller(
-			url <- '/'+s.name			
-			
-		)
-		
-	
-}
 -- url vererben funkt nicht!!
 rule DynamicPage2EntityController {
-	from
-		
-		d: swml!DynamicPage
-		
---		ok: swml!OKLink
---		ko: swml!KOLink
---		p: swml!Parameter
+	from		
+		p: swml!Page 
+		(not p.oclIsTypeOf(swml!StaticPage) and not p.oclIsTypeOf(swml!LinkJoinNode))
 		
 	to
-		out: smvcml!EntityController(
-			
+		out: smvcml!Page(
+			title <- p.name
+		
+		),
+		o: smvcml!EntityController (
 --			returnOKURL <- if d.link = true then
 --				d.name
 --			 else
@@ -192,11 +176,30 @@ rule DynamicPage2EntityController {
 --			endif,
 			
 --			returnKOURL <- ko.source,
-			dao <- d.displayedEntityType,
-			url <- '/'+d.name
-			
-		)
+			dao <- p.displayedEntityType,
+			url <- '/'+p.name,
+			page <- p
+		)	
+	
 	
 }
 
 
+--rule Page2Page {
+--	from
+		--d: swml!DynamicPage,
+		--s: swml!StaticPage
+		--h: swml!HypertextModel
+		
+--		p: swml!Page 
+--		(p.oclIsTypeOf(swml!Page))
+		
+--	to
+--		out: smvcml!Page(
+			--title <- d.name,
+--			title <- s.name
+--			title <- p.name
+		
+--		)
+	
+--}
