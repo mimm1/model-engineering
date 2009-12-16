@@ -9,7 +9,6 @@ create OUT : smvcml from IN : swml;
 
 -- Fehlend: Entity Professor und Assisten erben die Attribute von Professor (superEntity!)
 --			ID Attribute zu OID mapping fehlt
---			DAO und Controller befinden sich nicht innerhalb von SMVCApplication!
 helper context swml!EntityType def :
 	allAttributes : Sequence(swml!Attribute) =
 	self.attribute->union(
@@ -37,7 +36,8 @@ helper context swml!EntityType def :
 	allIDAttributes : Sequence(swml!Attribute) =
 		self.id->union(Sequence{})->flatten();
 
-
+--helper def: metamodel : smvcml!View = OclUndefined;
+--helper def : view(v : smvcml!View) : smvcml!View = v;
 
 rule WebApplication2SMVCApplication{
 	from
@@ -57,10 +57,6 @@ rule WebApplication2SMVCApplication{
 		    for(d in swml!EntityType.allInstances()) {
             	 out.daos <- thisModule.resolveTemp(d, 'o'); 
 			}
-		    for(p in swml!Page.allInstances()) {
-		    	if (not p.oclIsTypeOf(swml!LinkJoinNode))
-		    	out.controller <- thisModule.resolveTemp(p, 'o');
-		    }
 		    for(p in swml!Page.allInstances()) {
 		    	if (not p.oclIsTypeOf(swml!LinkJoinNode))
 		    	out.controller <- thisModule.resolveTemp(p, 'out2');
@@ -122,7 +118,6 @@ rule EntityType2Entity{
 rule Attribute2Attribute{
 	from
 		a: swml!Attribute
-	--	r: swml!EntityType
 
 	to
 		out: smvcml!Attribute(
@@ -131,7 +126,6 @@ rule Attribute2Attribute{
 			type <- if a.type.toString() = 'String' or not a.EnumType.oclIsUndefined() or a.type.toString() = 'Date' or a.type.toString() = 'Time' or a.type.toString() = 'Email' then #VARCHAR 
 			else if a.type.toString() = 'Float' then #DOUBLE else #BIGINTEGER endif endif,
 			multiValued <-	false 
-			--type <- a
 
 	)
 }
@@ -150,6 +144,8 @@ rule Relationship2Attribute{
 			complexType <- r.target
 	)
 }
+
+
 -- AB HIER HYPERTEXTMODEL
 
 --Fehler: Entity Controller Leitungen, EntityController Prufeungen und Page Details müssen bei EntityController LVADetails rein
@@ -163,11 +159,11 @@ rule StaticPage2Controller {
 	to
 		out: smvcml!Page(
 			title <- p.name,
-			links <- p.link
-			
+			links <- p.link,
+			view <- thisModule.View()
 		
 		),
-		o: smvcml!Controller (
+		out2: smvcml!Controller (
 			url <- '/'+ p.name,
 			page <- p
 		)
@@ -181,7 +177,8 @@ rule IndexPage2EntityController{
 		(p.oclIsTypeOf(swml!IndexPage))
 	to
 		out: smvcml!Page(
-			title <- p.name
+			title <- p.name,
+			view <- thisModule.View()
 			),
 		out2: smvcml!EntityController(
 			dao <- p.displayedEntityType,
@@ -201,7 +198,8 @@ rule EntityPage2EntityController{
 		(not p.oclIsTypeOf(swml!IndexPage) and not p.oclIsTypeOf(swml!StaticPage) and not p.oclIsTypeOf(swml!LinkJoinNode))
 	to
 		out: smvcml!Page(
-			title <- p.name
+			title <- p.name,
+			view <- thisModule.View()
 			),
 		out2: smvcml!EntityController(
 			dao <- p.displayedEntityType,
@@ -240,11 +238,11 @@ rule Link2Link{
 		
 }
 --called rule. aber keine ahnung wie ich die nun benutze (Page -> View und View -> Component!)
-entrypoint rule View() {
+rule View() {
 	to
 		v : smvcml!View
 	do {
-		thisModule.metamodel <- v;
+		v;
 	}
 }
 
