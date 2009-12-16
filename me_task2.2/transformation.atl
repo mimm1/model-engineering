@@ -49,11 +49,24 @@ rule WebApplication2SMVCApplication{
 		out: smvcml!SMVCApplication(
 			name <- w.name,	
 			entities <- c.entityType,
-			--daos <- thisModule.resolveTemp(c.entityType, 'o'),
 			controller <- h.page,
 			homeController <- h.homepage
 		)
-	
+		
+	do {
+		    for(d in swml!EntityType.allInstances()) {
+            	 out.daos <- thisModule.resolveTemp(d, 'o'); 
+			}
+		    for(p in swml!Page.allInstances()) {
+		    	if (not p.oclIsTypeOf(swml!LinkJoinNode))
+		    	out.controller <- thisModule.resolveTemp(p, 'o');
+		    }
+		    for(p in swml!Page.allInstances()) {
+		    	if (not p.oclIsTypeOf(swml!LinkJoinNode))
+		    	out.controller <- thisModule.resolveTemp(p, 'out2');
+		    }
+		    
+	}
 }
 
 
