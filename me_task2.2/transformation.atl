@@ -139,6 +139,8 @@ rule Relationship2Attribute{
 }
 -- AB HIER HYPERTEXTMODEL
 
+--Fehler: Entity Controller Leitungen, EntityController Prufeungen und Page Details müssen bei EntityController LVADetails rein
+
 
 rule StaticPage2Controller {
 	from		
@@ -159,33 +161,43 @@ rule StaticPage2Controller {
 	
 }
 
--- url vererben funkt nicht!!
-rule DynamicPage2EntityController {
-	from		
---	ko: swml!Link,	
-	p: swml!Page 
-		(not p.oclIsTypeOf(swml!StaticPage) and not p.oclIsTypeOf(swml!LinkJoinNode))
-		
-		
-		
+
+rule IndexPage2EntityController{
+	from
+		p: swml!Page
+		(p.oclIsTypeOf(swml!IndexPage))
 	to
 		out: smvcml!Page(
 			title <- p.name
-		
-		),
-		o: smvcml!EntityController (
---			returnOKURL <- if d.link = true then
---				d.name
---			 else
---			 	''
---			endif,
-			
---			returnKOURL <- ko.target.toString(),
+			),
+		out2: smvcml!EntityController(
 			dao <- p.displayedEntityType,
 			url <- '/'+p.name,
 			page <- p
+		),
+		out3: smvcml!List(
+			
+			entity <- p.displayedEntityType
 		)
-		
+}
+
+rule EntityPage2EntityController{
+	from
+		p: swml!Page
+		(not p.oclIsTypeOf(swml!IndexPage) and not p.oclIsTypeOf(swml!StaticPage) and not p.oclIsTypeOf(swml!LinkJoinNode))
+	to
+		out: smvcml!Page(
+			title <- p.name
+			),
+		out2: smvcml!EntityController(
+			dao <- p.displayedEntityType,
+			url <- '/'+p.name,
+			page <- p
+		),
+		out3: smvcml!Form(
+			
+			entity <- p.displayedEntityType
+		)
 }
 
 rule Link2Link{
@@ -208,5 +220,6 @@ entrypoint rule View() {
 		thisModule.metamodel <- v;
 	}
 }
+
 
 
