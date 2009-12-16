@@ -178,7 +178,7 @@ rule IndexPage2EntityController{
 	to
 		out: smvcml!Page(
 			title <- p.name,
-			view <- thisModule.View()
+			view <- thisModule.View(p.name.toString())
 			),
 		out2: smvcml!EntityController(
 			dao <- p.displayedEntityType,
@@ -199,15 +199,14 @@ rule EntityPage2EntityController{
 	to
 		out: smvcml!Page(
 			title <- p.name,
-			view <- thisModule.View()
+			view <- thisModule.View(p.name.toString())
 			),
 		out2: smvcml!EntityController(
 			dao <- p.displayedEntityType,
 			url <- '/'+p.name,
 			page <- p
 		),
-		out3: smvcml!Form(
-			
+		out3: smvcml!Form(			
 			entity <- p.displayedEntityType
 		)
 }
@@ -238,13 +237,38 @@ rule Link2Link{
 		
 }
 --called rule. aber keine ahnung wie ich die nun benutze (Page -> View und View -> Component!)
-rule View() {
+rule View(str : String) {
 	to
-		v : smvcml!View
+	--	l : smvcml!List (
+		--	entity <- d.displayedEntityType,
+		--	supportedOperations <- d.link	
+		--,
+	
+		v : smvcml!View(
+			--components <- l 	
+			--components <- 
+		)
 	do {
+		
+		for(p in swml!Page.allInstances()) {
+			if (not p.oclIsTypeOf(swml!LinkJoinNode) and p.name.toString() = str)
+            v.components <- thisModule.resolveTemp(p, 'out3'); 
+			}
+	
 		v;
 	}
 }
+
+--rule List(d : swml!Page) {
+--	to
+--		l : smvcml!List (
+			--entity <- d.displayedEntityType,
+			--supportedOperations <- d.link	
+--		)
+--	do {
+--		l;
+--	}
+--}
 
 
 
