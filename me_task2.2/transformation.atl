@@ -50,8 +50,8 @@ rule WebApplication2SMVCApplication{
 			name <- w.name,	
 			entities <- c.entityType,
 			--daos <- thisModule.resolveTemp(c.entityType, 'o'),
-			homeController <- h.homepage,
-			controller <- h.page
+			controller <- h.page,
+			homeController <- h.homepage
 		)
 	
 }
@@ -147,7 +147,9 @@ rule StaticPage2Controller {
 		
 	to
 		out: smvcml!Page(
-			title <- p.name
+			title <- p.name,
+			links <- p.link
+			
 		
 		),
 		o: smvcml!Controller (
@@ -160,8 +162,11 @@ rule StaticPage2Controller {
 -- url vererben funkt nicht!!
 rule DynamicPage2EntityController {
 	from		
-		p: swml!Page 
+--	ko: swml!Link,	
+	p: swml!Page 
 		(not p.oclIsTypeOf(swml!StaticPage) and not p.oclIsTypeOf(swml!LinkJoinNode))
+		
+		
 		
 	to
 		out: smvcml!Page(
@@ -175,31 +180,33 @@ rule DynamicPage2EntityController {
 --			 	''
 --			endif,
 			
---			returnKOURL <- ko.source,
+--			returnKOURL <- ko.target.toString(),
 			dao <- p.displayedEntityType,
 			url <- '/'+p.name,
 			page <- p
-		)	
+		)
+		
+}
+
+rule Link2Link{
+	from
+		l: swml!Link
+		(l.oclIsTypeOf(swml!NonContextualLink))
+		
+	to
+		out: smvcml!Link(
+			url <- '/'+l.target.toString().regexReplaceAll('IN!', ' ').regexReplaceAll(':swml!IndexPage', ' ')
 	
-	
+		)
+		
+}
+--called rule. aber keine ahnung wie ich die nun benutze (Page -> View und View -> Component!)
+entrypoint rule View() {
+	to
+		v : smvcml!View
+	do {
+		thisModule.metamodel <- v;
+	}
 }
 
 
---rule Page2Page {
---	from
-		--d: swml!DynamicPage,
-		--s: swml!StaticPage
-		--h: swml!HypertextModel
-		
---		p: swml!Page 
---		(p.oclIsTypeOf(swml!Page))
-		
---	to
---		out: smvcml!Page(
-			--title <- d.name,
---			title <- s.name
---			title <- p.name
-		
---		)
-	
---}
