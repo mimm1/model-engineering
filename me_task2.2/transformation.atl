@@ -9,7 +9,7 @@ create OUT : smvcml from IN : swml;
 
 -- Fehlend: Entity Professor und Assisten erben die Attribute von Professor (superEntity!)
 --			ID Attribute zu OID mapping fehlt
-
+--			DAO und Controller befinden sich nicht innerhalb von SMVCApplication!
 helper context swml!EntityType def :
 	allAttributes : Sequence(swml!Attribute) =
 	self.attribute->union(
@@ -210,8 +210,8 @@ rule SupportedOperation2ContextualLink{
 		url <- cl.target.toString().regexReplaceAll('IN!', '/').regexReplaceAll(':swml!EntityPage', ' ').regexReplaceAll(':swml!DeletePage', ' ').regexReplaceAll(':swml!UpdatePage', ' ').regexReplaceAll(':swml!CreatePage', ' ')
 			
 		)
-	
-	
+		
+
 }
 
 rule Link2Link{
