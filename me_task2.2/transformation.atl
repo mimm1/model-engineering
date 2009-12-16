@@ -177,7 +177,8 @@ rule IndexPage2EntityController{
 		),
 		out3: smvcml!List(
 			
-			entity <- p.displayedEntityType
+			entity <- p.displayedEntityType,
+			supportedOperations <- p.link
 		)
 }
 
@@ -200,6 +201,19 @@ rule EntityPage2EntityController{
 		)
 }
 
+rule SupportedOperation2ContextualLink{
+	from
+		cl: swml!Link
+		(cl.oclIsTypeOf(swml!ContextualLink))
+	to
+		out: smvcml!SupportedOperation(
+		url <- cl.target.toString().regexReplaceAll('IN!', '/').regexReplaceAll(':swml!EntityPage', ' ').regexReplaceAll(':swml!DeletePage', ' ').regexReplaceAll(':swml!UpdatePage', ' ').regexReplaceAll(':swml!CreatePage', ' ')
+			
+		)
+	
+	
+}
+
 rule Link2Link{
 	from
 		l: swml!Link
@@ -207,7 +221,7 @@ rule Link2Link{
 		
 	to
 		out: smvcml!Link(
-			url <- '/'+l.target.toString().regexReplaceAll('IN!', ' ').regexReplaceAll(':swml!IndexPage', ' ')
+			url <- l.target.toString().regexReplaceAll('IN!', '/').regexReplaceAll(':swml!IndexPage', ' ')
 	
 		)
 		
