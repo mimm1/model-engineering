@@ -10,10 +10,95 @@
 
 «DEFINE entityClass(String packageName) FOR Entity-»
 	«FILE srcFolder()+packageName+"/"+name+".java"-»
+package entity;
+
+import java.io.Serializable;
+import java.util.*;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "«name.toUpperCase()»")
+public class «name» implements Serializable {
+	
+	public «name»() {
+	}
+	
+	@Id
+    @GeneratedValue
+    @Column(name = "«name.toUpperCase()»_DBID")
+    private Long «name.toLowerCase()»DbID;
+
+    public Long get«name»DbID() {
+        return «name.toLowerCase()»DbID;
+    }
+	
+	«FOREACH attributes AS att»
+	«IF att.type.toString().matches("VARCHAR")»
+	@Column(name = "«att.name.toUpperCase()»")
+	«EXPAND genAttSetterGetter("String", att.name.toLowerCase())»	
+    «ENDIF»
+    «IF att.type.toString().matches("OID")»
+    @Column(name = "«att.name.toUpperCase()»", nullable = false, unique = true)
+    «EXPAND genAttSetterGetter("String", att.name.toLowerCase())»
+    «ENDIF»
+    «IF att.type.toString().matches("DOUBLE")»
+    @Column(name = "«att.name.toUpperCase()»")
+    «EXPAND genAttSetterGetter("Double", att.name.toLowerCase())»
+    «ENDIF»
+    «IF att.type.toString().matches("BIGINTEGER")»
+    @Column(name = "«att.name.toUpperCase()»")
+    «EXPAND genAttSetterGetter("Integer", att.name.toLowerCase())»
+    «ENDIF»
+    «IF att.type.toString().matches("VOID")»
+    «IF att.multiValued == true»
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.REMOVE}, mappedBy = "«name.toLowerCase()»")
+    «EXPAND genAttSetterGetter("List<"+att.complexType.name+">", att.name.toLowerCase())»
+    «ELSE»
+    @ManyToOne
+    @JoinColumn(name = "FK_«att.complexType.name.toUpperCase()»_DBID")
+    «EXPAND genAttSetterGetter(att.complexType.name, att.name.toLowerCase())»
+    «ENDIF»
+    «ENDIF»
+	«ENDFOREACH»
+	«EXPAND genMethods(attributes.select(e|e.type.toString()=="OID").name.first().toLowerCase())»
+}
 		«REM»...here...«ENDREM»
 	«ENDFILE-»
 «ENDDEFINE»
 
+«DEFINE genAttSetterGetter(String type, String name) FOR Entity»
+    private «type» «name»;
+    
+    public «type» get«name.toFirstUpper()»() {
+        return «name»;
+    }
+    
+    public void set«name.toFirstUpper()»(final «type» «name») {
+        this.«name» = «name»;
+    }
+«ENDDEFINE»
+
+«DEFINE genMethods(String oid) FOR Entity»
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof «name»))
+            return false;
+        «name» other«name» = («name») obj;
+        if (((«oid» != null && «oid».equals(other«name».«oid»)) || «oid» == other«name».«oid»)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result *= 31 + («oid» == null ? 0 : «oid».hashCode());
+        return result;
+    }
+«ENDDEFINE»
 «DEFINE daoClass(String packageName) FOR DataAccessObject-»
     «FILE srcFolder()+packageName+"/"+name+".java"-»
         «REM»...here...«ENDREM»
