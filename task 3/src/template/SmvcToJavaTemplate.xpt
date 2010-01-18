@@ -1,0 +1,23 @@
+«IMPORT SMVC»
+
+«EXTENSION template::GeneratorExtension»
+
+«DEFINE main FOR SMVCApplication»
+	«EXPAND entityClass("entity") FOREACH entities-»
+	«EXPAND daoClass("dao") FOREACH daos-»
+	«REM»Your code goes here...«ENDREM»
+«ENDDEFINE»
+
+«DEFINE entityClass(String packageName) FOR Entity-»
+	«FILE srcFolder()+packageName+"/"+name+".java"-»
+		«REM»...here...«ENDREM»
+	«ENDFILE-»
+«ENDDEFINE»
+
+«DEFINE daoClass(String packageName) FOR DataAccessObject-»
+    «FILE srcFolder()+packageName+"/"+name+".java"-»
+        «REM»...here...«ENDREM»
+    «ENDFILE-»
+«ENDDEFINE»
+
+«REM»...and most probably here, too.«ENDREM»

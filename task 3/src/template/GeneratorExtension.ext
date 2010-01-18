@@ -1,0 +1,12 @@
+import SMVC;
+
+/* Global Extension Functions */
+String srcFolder() :
+	"src/"
+;
+
+String webContentFolder() :
+	"WebContent/"
+;
+
+// Your Extensions go here...
