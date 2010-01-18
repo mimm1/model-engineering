@@ -1,15 +1,16 @@
-«IMPORT SMVC»
+Â«IMPORT SMVCÂ»
 
-«EXTENSION template::GeneratorExtension»
+Â«EXTENSION template::GeneratorExtensionÂ»
 
-«DEFINE main FOR SMVCApplication»
-	«EXPAND entityClass("entity") FOREACH entities-»
-	«EXPAND daoClass("dao") FOREACH daos-»
-	«REM»Your code goes here...«ENDREM»
-«ENDDEFINE»
+Â«DEFINE main FOR SMVCApplicationÂ»
+ Â«EXPAND entityClass("entity") FOREACH entities-Â»
+ Â«EXPAND daoClass("dao") FOREACH daos-Â»
+ 	
+ Â«REMÂ»Your code goes here...Â«ENDREMÂ»
+Â«ENDDEFINEÂ»
 
-«DEFINE entityClass(String packageName) FOR Entity-»
-	«FILE srcFolder()+packageName+"/"+name+".java"-»
+Â«DEFINE entityClass(String packageName) FOR Entity-Â»
+ Â«FILE srcFolder()+packageName+"/"+name+".java"-Â»
 package entity;
 
 import java.io.Serializable;
@@ -18,75 +19,75 @@ import java.util.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "«name.toUpperCase()»")
-public class «name» implements Serializable {
-	
-	public «name»() {
-	}
-	
-	@Id
+@Table(name = "Â«name.toUpperCase()Â»")
+public class Â«nameÂ» implements Serializable {
+ 
+ public Â«nameÂ»() {
+ }
+ 
+ @Id
     @GeneratedValue
-    @Column(name = "«name.toUpperCase()»_DBID")
-    private Long «name.toLowerCase()»DbID;
+    @Column(name = "Â«name.toUpperCase()Â»_DBID")
+    private Long Â«name.toLowerCase()Â»DbID;
 
-    public Long get«name»DbID() {
-        return «name.toLowerCase()»DbID;
+    public Long getÂ«nameÂ»DbID() {
+        return Â«name.toLowerCase()Â»DbID;
     }
-	
-	«FOREACH attributes AS att»
-	«IF att.type.toString().matches("VARCHAR")»
-	@Column(name = "«att.name.toUpperCase()»")
-	«EXPAND genAttSetterGetter("String", att.name.toLowerCase())»	
-    «ENDIF»
-    «IF att.type.toString().matches("OID")»
-    @Column(name = "«att.name.toUpperCase()»", nullable = false, unique = true)
-    «EXPAND genAttSetterGetter("String", att.name.toLowerCase())»
-    «ENDIF»
-    «IF att.type.toString().matches("DOUBLE")»
-    @Column(name = "«att.name.toUpperCase()»")
-    «EXPAND genAttSetterGetter("Double", att.name.toLowerCase())»
-    «ENDIF»
-    «IF att.type.toString().matches("BIGINTEGER")»
-    @Column(name = "«att.name.toUpperCase()»")
-    «EXPAND genAttSetterGetter("Integer", att.name.toLowerCase())»
-    «ENDIF»
-    «IF att.type.toString().matches("VOID")»
-    «IF att.multiValued == true»
+ 
+ Â«FOREACH attributes AS attÂ»
+ Â«IF att.type.toString().matches("VARCHAR")Â»
+ @Column(name = "Â«att.name.toUpperCase()Â»")
+ Â«EXPAND genAttSetterGetter("String", att.name.toLowerCase())Â» 
+    Â«ENDIFÂ»
+    Â«IF att.type.toString().matches("OID")Â»
+    @Column(name = "Â«att.name.toUpperCase()Â»", nullable = false, unique = true)
+    Â«EXPAND genAttSetterGetter("String", att.name.toLowerCase())Â»
+    Â«ENDIFÂ»
+    Â«IF att.type.toString().matches("DOUBLE")Â»
+    @Column(name = "Â«att.name.toUpperCase()Â»")
+    Â«EXPAND genAttSetterGetter("Double", att.name.toLowerCase())Â»
+    Â«ENDIFÂ»
+    Â«IF att.type.toString().matches("BIGINTEGER")Â»
+    @Column(name = "Â«att.name.toUpperCase()Â»")
+    Â«EXPAND genAttSetterGetter("Integer", att.name.toLowerCase())Â»
+    Â«ENDIFÂ»
+    Â«IF att.type.toString().matches("VOID")Â»
+    Â«IF att.multiValued == trueÂ»
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.REMOVE}, mappedBy = "«name.toLowerCase()»")
-    «EXPAND genAttSetterGetter("List<"+att.complexType.name+">", att.name.toLowerCase())»
-    «ELSE»
+            CascadeType.REMOVE}, mappedBy = "Â«name.toLowerCase()Â»")
+    Â«EXPAND genAttSetterGetter("List<"+att.complexType.name+">", att.name.toLowerCase())Â»
+    Â«ELSEÂ»
     @ManyToOne
-    @JoinColumn(name = "FK_«att.complexType.name.toUpperCase()»_DBID")
-    «EXPAND genAttSetterGetter(att.complexType.name, att.name.toLowerCase())»
-    «ENDIF»
-    «ENDIF»
-	«ENDFOREACH»
-	«EXPAND genMethods(attributes.select(e|e.type.toString()=="OID").name.first().toLowerCase())»
+    @JoinColumn(name = "FK_Â«att.complexType.name.toUpperCase()Â»_DBID")
+    Â«EXPAND genAttSetterGetter(att.complexType.name, att.name.toLowerCase())Â»
+    Â«ENDIFÂ»
+    Â«ENDIFÂ»
+ Â«ENDFOREACHÂ»
+ Â«EXPAND genMethods(attributes.select(e|e.type.toString()=="OID").name.first().toLowerCase())Â»
 }
-		«REM»...here...«ENDREM»
-	«ENDFILE-»
-«ENDDEFINE»
+  Â«REMÂ»...here...Â«ENDREMÂ»
+ Â«ENDFILE-Â»
+Â«ENDDEFINEÂ»
 
-«DEFINE genAttSetterGetter(String type, String name) FOR Entity»
-    private «type» «name»;
+Â«DEFINE genAttSetterGetter(String type, String name) FOR EntityÂ»
+    private Â«typeÂ» Â«nameÂ»;
     
-    public «type» get«name.toFirstUpper()»() {
-        return «name»;
+    public Â«typeÂ» getÂ«name.toFirstUpper()Â»() {
+        return Â«nameÂ»;
     }
     
-    public void set«name.toFirstUpper()»(final «type» «name») {
-        this.«name» = «name»;
+    public void setÂ«name.toFirstUpper()Â»(final Â«typeÂ» Â«nameÂ») {
+        this.Â«nameÂ» = Â«nameÂ»;
     }
-«ENDDEFINE»
+Â«ENDDEFINEÂ»
 
-«DEFINE genMethods(String oid) FOR Entity»
+Â«DEFINE genMethods(String oid) FOR EntityÂ»
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof «name»))
+        if (!(obj instanceof Â«nameÂ»))
             return false;
-        «name» other«name» = («name») obj;
-        if (((«oid» != null && «oid».equals(other«name».«oid»)) || «oid» == other«name».«oid»)) {
+        Â«nameÂ» otherÂ«nameÂ» = (Â«nameÂ») obj;
+        if (((Â«oidÂ» != null && Â«oidÂ».equals(otherÂ«nameÂ».Â«oidÂ»)) || Â«oidÂ» == otherÂ«nameÂ».Â«oidÂ»)) {
             return true;
         }
         return false;
@@ -95,14 +96,55 @@ public class «name» implements Serializable {
     @Override
     public int hashCode() {
         int result = 17;
-        result *= 31 + («oid» == null ? 0 : «oid».hashCode());
+        result *= 31 + (Â«oidÂ» == null ? 0 : Â«oidÂ».hashCode());
         return result;
     }
-«ENDDEFINE»
-«DEFINE daoClass(String packageName) FOR DataAccessObject-»
-    «FILE srcFolder()+packageName+"/"+name+".java"-»
-        «REM»...here...«ENDREM»
-    «ENDFILE-»
-«ENDDEFINE»
+Â«ENDDEFINEÂ»
+Â«DEFINE daoClass(String packageName) FOR DataAccessObject-Â»
+    Â«FILE srcFolder()+packageName+"/"+name+".java"-Â»
+package dao;
 
-«REM»...and most probably here, too.«ENDREM»
+import java.util.*;
+
+import org.hibernate.Session;
+
+import entity.*;
+
+
+public class Â«nameÂ»  implements  DAO<Â«name.replaceAll("DAO"," " )Â»>{
+
+	public void delete(final long id){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Â«name.replaceAll("DAO","" )Â»  Â«name.replaceAll("DAO","" ).toFirstLower()Â» = (Â«name.replaceAll("DAO","" )Â» ) session.load(Â«name.replaceAll("DAO","" )Â» .class, id);
+		session.delete(Â«name.replaceAll("DAO","" ).toFirstLower()Â»);
+	
+	}
+	public Â«name.replaceAll("DAO"," " )Â» load(final long id){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Â«name.replaceAll("DAO","" )Â»  Â«name.replaceAll("DAO","" ).toFirstLower()Â» = (Â«name.replaceAll("DAO","" )Â») session.load(Â«name.replaceAll("DAO","" )Â».class, id);
+		return Â«name.replaceAll("DAO","" ).toFirstLower()Â»;
+	} 
+	public List<Â«name.replaceAll("DAO"," " )Â»> loadAll(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		List<Â«name.replaceAll("DAO","" )Â»> result = session.createQuery("SELECT l FROM Â«name.replaceAll("DAO","" )Â» l").list();
+		
+		return result;
+	}
+	public void persist(final Â«name.replaceAll("DAO","" )Â»  Â«name.replaceAll("DAO","" ).toFirstLower()Â») {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.saveOrUpdate(Â«name.replaceAll("DAO","" ).toFirstLower()Â»);
+	}
+	public void update(final Â«name.replaceAll("DAO","" )Â»  Â«name.replaceAll("DAO","" ).toFirstLower()Â») {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.saveOrUpdate(Â«name.replaceAll("DAO","" ).toFirstLower()Â»);
+	}
+}
+        Â«REMÂ»...here...Â«ENDREMÂ»
+    Â«ENDFILE-Â»
+Â«ENDDEFINEÂ»
+
+Â«REMÂ»...and most probably here, too.Â«ENDREMÂ»
+
+
+
+
