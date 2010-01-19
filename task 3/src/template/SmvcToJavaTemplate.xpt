@@ -7,7 +7,8 @@
 	«EXPAND daoClass("dao") FOREACH daos-»
 	«EXPAND servlets("web") FOREACH controller.typeSelect(EntityController)-»
 	«EXPAND indexPage FOR homeController-»
-	«EXPAND webPages(homeController) FOREACH controller-»
+	«EXPAND webPages(homeController) FOREACH controller.typeSelect(EntityController)-»
+    «EXPAND staticPages(homeController) FOREACH controller-»
 «ENDDEFINE»
 
 «DEFINE entityClass(String packageName) FOR Entity-»
@@ -248,19 +249,22 @@ public class «page.title»Servlet extends HttpServlet {
     «ENDFILE-»
 «ENDDEFINE»
 
-«DEFINE webPages(Controller home) FOR Controller-»
-    «IF this.metaType.toString().matches("SMVC::EntityController")»
+«DEFINE webPages(Controller home) FOR EntityController-»
     «FILE webContentFolder()+page.title+".jsp"-»
     «EXPAND genWebContent(home) FOR this-»
     «ENDFILE-»
     «IF !this.subController.isEmpty»
-    «FOREACH this.subController AS subct»
+    «FOREACH this.subController.typeSelect(EntityController) AS subct»
     «FILE webContentFolder()+"Inner"+subct.page.title+".jsp"-»
-    «EXPAND genWebContent(home) FOR this-»
+    «EXPAND genWebContent(home) FOR subct-»
     «ENDFILE-»
     «ENDFOREACH»
     «ENDIF»
-    «ELSE»
+«ENDDEFINE»
+
+
+«DEFINE staticPages(Controller home) FOR Controller-»
+    «IF this.metaType.toString().matches("SMVC::Controller")»
     «FILE webContentFolder()+page.title+".html"-»    
 <html>
 <title>«page.title»</title>
@@ -276,9 +280,50 @@ public class «page.title»Servlet extends HttpServlet {
     «ENDIF»
 «ENDDEFINE»
 
-«DEFINE genWebContent(Controller home) FOR Controller-»
-test test test
+
+«DEFINE genWebContent(Controller home) FOR EntityController-»
+    «IF operation.toString().matches("readALL")-»
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
+<title>«page.title»</title>
+<body>
+<h1>«page.title»</h1>
+<a href="«home.url.replaceFirst("/", "")».html">Home</a>&nbsp;
+<p></p>
+    <table border="1">
+        <thead>
+            <tr>
+            «FOREACH this.dao.forEntity.attributes AS att-»
+                «IF att.multiValued == false-»    
+                <td align="center"><b>«att.name.toFirstUpper()»</b></td>
+                «ENDIF-»
+            «ENDFOREACH-»
+                <td colspan="1»">&nbsp;</td>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="«this.dao.forEntity.name.toLowerCase()»" items="${«this.dao.forEntity.name.toLowerCase()»Entries}">
+            <tr>
+            «FOREACH this.dao.forEntity.attributes AS att-»
+                «IF att.multiValued == false-»
+                «IF att.type.toString().matches("VOID")-»
+                <td><c:out value="${«this.dao.forEntity.name.toLowerCase()».«att.name.toLowerCase()».«att.complexType.attributes.selectFirst(e|e.type.toString() == "OID").name.toLowerCase()»}"/></td>    
+                «ELSE-»
+                <td><c:out value="${«this.dao.forEntity.name.toLowerCase()».«att.name.toLowerCase()»}"/></td>   
+                «ENDIF-»
+                «ENDIF-»
+            «ENDFOREACH-» 
+            «FOREACH page.view.components.typeSelect(SMVC::^List) AS list-» 
+                «FOREACH list.supportedOperations AS supop-»  
+                <td><a href="«supop.url.replaceFirst("/", "")»?«dao.forEntity.name.toLowerCase()»DbID=${«this.dao.forEntity.name.toLowerCase()».«this.dao.forEntity.name.toLowerCase()»DbID}">«supop.url.replaceFirst("/"+dao.forEntity.name.toUpperCase(), "")»</a></td>
+                «ENDFOREACH-»
+            «ENDFOREACH-» 
+            </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+</body>
 </html>
+    «ENDIF-»
 «ENDDEFINE»   
 «REM»...and most probably here, too.«ENDREM»
