@@ -9,4 +9,19 @@ String webContentFolder() :
 	"WebContent/"
 ;
 
+String getDao(SMVCApplication appl, Entity e):
+appl.daos.selectFirst(d|d.forEntity == e).name
+;
+
+
+String getAttType(Attribute att) :
+switch (att.type.toString()) {
+    case "VARCHAR" : "String"
+    case "OID" : "String"
+    case "DOUBLE" : "Double"
+    case "BIGINTEGER" : "Integer"
+    default : "VOID"
+}
+;
+
 // Your Extensions go here...
