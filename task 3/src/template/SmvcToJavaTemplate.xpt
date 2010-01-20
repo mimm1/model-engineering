@@ -9,6 +9,7 @@
 	«EXPAND indexPage FOR homeController-»
 	«EXPAND webPages(homeController) FOREACH controller.typeSelect(EntityController)-»
     «EXPAND staticPages(homeController) FOREACH controller-»
+    «EXPAND genXML("web") FOR this-»
 «ENDDEFINE»
 
 «DEFINE entityClass(String packageName) FOR Entity-»
@@ -306,6 +307,10 @@ public class «page.title»Servlet extends HttpServlet {
     «EXPAND readOneOp FOR this-»
     «ELSEIF operation.toString().matches("_create")-»
     «EXPAND createOp FOR this-»
+    «ELSEIF operation.toString().matches("update")-»
+    «EXPAND updateOp FOR this-»
+    «ELSEIF operation.toString().matches("delete")-»
+    «EXPAND deleteOp FOR this-»
     «ENDIF-»
 «ENDDEFINE»
 
@@ -371,4 +376,112 @@ public class «page.title»Servlet extends HttpServlet {
 «ENDDEFINE»
 
 «DEFINE createOp FOR EntityController-»
+    <form method="POST" action="«page.title»">
+    <table>
+        «FOREACH dao.forEntity.attributes AS att-»
+        <tr>
+        «IF att.complexType == null-»
+            <td><em>«att.name»:</em></td>
+            <td><input name="«att.name.toLowerCase()»" type="text" size="40" maxlength="80"/></td>        
+        «ELSE-»
+            <td><em>«att.complexType.name»:</em></td>
+            <td>
+                <select name="«att.complexType.name.toLowerCase()»" size="1">
+                <c:forEach var="«att.complexType.name.toLowerCase()»Entry" items="${«att.complexType.name.toLowerCase()»Entries}">
+                    <option value='${«att.complexType.name.toLowerCase()»Entry["«att.complexType.name.toLowerCase()»DbID"]}'>
+                        ${«att.complexType.name.toLowerCase()»Entry["«att.complexType.attributes.selectFirst(e|e.type.toString().matches("OID")).name.toLowerCase()»"]}
+                    </option>
+                </c:forEach>
+                </select> 
+            </td>
+        «ENDIF-»
+        </tr>    
+        «ENDFOREACH-»
+    </table>
+    <input type="SUBMIT" value=" Erstellen "/>
+    </form>
+«ENDDEFINE»
+
+«DEFINE updateOp FOR EntityController-»
+    <form method="POST" action="«page.title»">
+    <table>
+        «FOREACH dao.forEntity.attributes AS att-»
+        <tr>
+        «IF att.complexType == null-»
+            <td><em>«att.name»:</em></td>
+            <td><input name="«att.name.toLowerCase()»" type="text" size="40" maxlength="80" value='${«dao.forEntity.name.toLowerCase()»["«att.name.toLowerCase()»"]}'/></td>       
+        «ELSE-»
+            <td><em>«att.complexType.name»:</em></td>
+            <td>
+                <select name="«att.complexType.name.toLowerCase()»" size="1">
+                <c:forEach var="«att.complexType.name.toLowerCase()»Entry" items="${«att.complexType.name.toLowerCase()»Entries}">
+                    <option value='${«att.complexType.name.toLowerCase()»Entry["«att.complexType.name.toLowerCase()»DbID"]}' <c:if test='${«dao.forEntity.name.toLowerCase()».«att.complexType.name.toLowerCase()»["«att.complexType.name.toLowerCase()»DbID"] eq «att.complexType.name.toLowerCase()»Entry["«att.complexType.name.toLowerCase()»DbID"]}'>selected</c:if>>
+                        ${«att.complexType.name.toLowerCase()»Entry["«att.complexType.attributes.selectFirst(e|e.type.toString().matches("OID")).name.toLowerCase()»"]}
+                    </option>
+                </c:forEach> 
+                </select>
+            </td>
+        «ENDIF»
+        </tr>    
+        «ENDFOREACH-»
+    </table>
+    <input type="HIDDEN" name="«dao.forEntity.name.toLowerCase()»DbID" value='${«dao.forEntity.name.toLowerCase()»["«dao.forEntity.name.toLowerCase()»DbID"]}'/>
+    <input type="SUBMIT" value=" Update "/>
+    </form>
+«ENDDEFINE»
+
+«DEFINE deleteOp FOR EntityController-»
+    <form method="POST" action="«page.title»">
+    <table>
+        «FOREACH dao.forEntity.attributes AS att-»
+        <tr>
+        «IF att.complexType == null-»
+            <td><em>«att.name»:</em></td>
+            <td><c:out value='${«dao.forEntity.name.toLowerCase()»["«att.name.toLowerCase()»"]}'/></td>       
+        «ELSE-»
+            <td><em>«att.complexType.name»:</em></td>
+            <td><c:out value='${«dao.forEntity.name.toLowerCase()».«att.complexType.name.toLowerCase()»["«att.complexType.attributes.selectFirst(e|e.type.toString().matches("OID")).name.toLowerCase()»"]}'/></td>
+        «ENDIF-»
+        </tr>    
+        «ENDFOREACH-»
+    </table>
+    <input type="HIDDEN" name="«dao.forEntity.name.toLowerCase()»DbID" value='${«dao.forEntity.name.toLowerCase()»["«dao.forEntity.name.toLowerCase()»DbID"]}'/>
+    <input type="SUBMIT" value=" Löschen "/>
+    </form>
+«ENDDEFINE»
+
+«DEFINE genXML(String file) FOR SMVCApplication-»
+    «FILE xmlFolder()+file+".xml"-»
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee   http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <welcome-file-list>
+        <welcome-file>«homeController.page.title».html</welcome-file>
+    </welcome-file-list>
+    «PROTECT CSTART "<!--" CEND "-->" ID file+".xml"» 
+    <filter>
+        <description>
+        </description>
+        <display-name>HibernateFilter</display-name>
+        <filter-name>HibernateFilter</filter-name>
+        <filter-class>web.HibernateSessionRequestFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>HibernateFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    «ENDPROTECT»
+    «FOREACH controller.typeSelect(EntityController) AS servlet»
+    <servlet>
+        <servlet-name>«servlet.page.title»</servlet-name>
+        <servlet-class>web.«servlet.page.title»Servlet</servlet-class>
+    </servlet>
+    «ENDFOREACH»
+    «FOREACH controller.typeSelect(EntityController) AS servlet»
+    <servlet-mapping>
+        <servlet-name>«servlet.page.title»</servlet-name>
+        <url-pattern>/«servlet.page.title»</url-pattern>
+    </servlet-mapping>
+    «ENDFOREACH»
+</web-app>
+    «ENDFILE»
 «ENDDEFINE»

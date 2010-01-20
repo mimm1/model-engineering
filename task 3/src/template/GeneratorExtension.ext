@@ -9,6 +9,10 @@ String webContentFolder() :
 	"WebContent/"
 ;
 
+String xmlFolder() :
+    "WebContent/WEB-INF/"
+;
+
 String getDao(SMVCApplication appl, Entity e):
 appl.daos.selectFirst(d|d.forEntity == e).name
 ;
