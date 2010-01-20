@@ -206,7 +206,7 @@ public class «page.title»Servlet extends HttpServlet {
             resp.sendRedirect("«returnOKURL.replaceFirst("/", "")»");
         } catch(Exception e) {
             e.printStackTrace();
-            resp.sendRedirect("«returnKOURL.replaceFirst("/", "")»");           
+            resp.sendRedirect("«returnKOURL.replaceFirst("/", "")».html");           
         }
     «ELSE-»
             super.doPost(req, resp); 
@@ -291,7 +291,7 @@ public class «page.title»Servlet extends HttpServlet {
 
 <a href="«home.url.replaceFirst("/", "")».html">Home</a>&nbsp;
 
-<p></p>
+<p>«page.view.text»</p>
 </body>
 </html>
     «ENDFILE-»
@@ -300,7 +300,7 @@ public class «page.title»Servlet extends HttpServlet {
 
 
 «DEFINE genWebContent FOR EntityController-»
-<p></p>
+<p>«page.view.text»</p>
     «IF operation.toString().matches("readALL")-»
     «EXPAND readAllOp FOR this-»
     «ELSEIF operation.toString().matches("readONE")-»
