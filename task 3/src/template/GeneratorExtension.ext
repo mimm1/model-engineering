@@ -24,4 +24,13 @@ switch (att.type.toString()) {
 }
 ;
 
+String getOperationKindGer(SupportedOperation supop) :
+switch (supop.operationKind.toString()) {
+    case "_create" : "Erstellen"
+    case "update" : "Bearbeiten"
+    case "delete" : "Löschen"
+    case "read" : "Details"
+    default : supop.url.replaceFirst("/","")
+}
+;
 // Your Extensions go here...

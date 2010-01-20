@@ -43,7 +43,7 @@ public class «name» implements Serializable {
     «ELSEIF att.type.toString().matches("VOID")»
     «IF att.multiValued == true»
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.REMOVE}, mappedBy = "«name.toLowerCase()»")
+            CascadeType.REMOVE}, mappedBy = "«att.complexType.attributes.selectFirst(e|e.complexType == this).name»")
     «EXPAND genAttSetterGetter("List<"+att.complexType.name+">", att.name.toLowerCase())»
     «ELSE»
     @ManyToOne
@@ -240,8 +240,8 @@ public class «page.title»Servlet extends HttpServlet {
 
 <a href="«page.title».html">Home</a>
 
-«FOREACH page.links.url AS uri-»
-&nbsp;<a href="«uri.replaceFirst("/", "")»">«uri.replaceFirst("/", "")»</a>
+«FOREACH page.links.url AS uri SEPARATOR "&nbsp;"-»
+<a href="«uri.replaceFirst("/", "")»">«uri.replaceFirst("/", "")»</a>
 «ENDFOREACH -»
 <p></p>
 </body>
@@ -251,15 +251,32 @@ public class «page.title»Servlet extends HttpServlet {
 
 «DEFINE webPages(Controller home) FOR EntityController-»
     «FILE webContentFolder()+page.title+".jsp"-»
-    «EXPAND genWebContent(home) FOR this-»
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<html>
+<title>«page.title»</title>
+<body>
+<h1>«page.title»</h1>
+<a href="«home.url.replaceFirst("/", "")».html">Home</a>&nbsp;
+    «EXPAND genWebContent FOR this-»
+«IF !this.subController.isEmpty-»
+«FOREACH this.subController.typeSelect(EntityController) AS subct SEPARATOR "<br>"-»
+«FILE webContentFolder()+"Inner"+subct.page.title+".jsp"-»   
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<h3>«subct.page.title»</h3>
+«EXPAND genWebContent FOR subct-»
+«ENDFILE-»
+<c:import url = "Inner«subct.page.title».jsp">
+«IF subct.operation.toString().matches("readALL")-»
+<c:param name = "«subct.dao.forEntity.name.toLowerCase()»Entries" value = "${requestScope.«subct.dao.forEntity.name.toLowerCase()»Entries}"/>
+«ELSE-»
+<c:param name = "«subct.dao.forEntity.name.toLowerCase()»" value = "${requestScope.«subct.dao.forEntity.name.toLowerCase()»}"/>
+«ENDIF-»
+</c:import>
+«ENDFOREACH-»
+«ENDIF-»
+</body>
+</html>   
     «ENDFILE-»
-    «IF !this.subController.isEmpty»
-    «FOREACH this.subController.typeSelect(EntityController) AS subct»
-    «FILE webContentFolder()+"Inner"+subct.page.title+".jsp"-»
-    «EXPAND genWebContent(home) FOR subct-»
-    «ENDFILE-»
-    «ENDFOREACH»
-    «ENDIF»
 «ENDDEFINE»
 
 
@@ -281,15 +298,25 @@ public class «page.title»Servlet extends HttpServlet {
 «ENDDEFINE»
 
 
-«DEFINE genWebContent(Controller home) FOR EntityController-»
-    «IF operation.toString().matches("readALL")-»
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html>
-<title>«page.title»</title>
-<body>
-<h1>«page.title»</h1>
-<a href="«home.url.replaceFirst("/", "")».html">Home</a>&nbsp;
+«DEFINE genWebContent FOR EntityController-»
 <p></p>
+    «IF operation.toString().matches("readALL")-»
+    «EXPAND readAllOp FOR this-»
+    «ELSEIF operation.toString().matches("readONE")-»
+    «EXPAND readOneOp FOR this-»
+    «ELSEIF operation.toString().matches("_create")-»
+    «EXPAND createOp FOR this-»
+    «ENDIF-»
+«ENDDEFINE»
+
+«DEFINE readAllOp FOR EntityController-»
+«FOREACH page.view.components.typeSelect(SMVC::^List) AS list-» 
+    «FOREACH list.supportedOperations AS supop-»
+    «IF supop.operationKind.toString().matches("_create")-»  
+    <a href="«supop.url.replaceFirst("/","")»">«getOperationKindGer(supop)»</a>
+    «ENDIF-»
+    «ENDFOREACH-»
+«ENDFOREACH-»
     <table border="1">
         <thead>
             <tr>
@@ -314,16 +341,34 @@ public class «page.title»Servlet extends HttpServlet {
                 «ENDIF-»
             «ENDFOREACH-» 
             «FOREACH page.view.components.typeSelect(SMVC::^List) AS list-» 
-                «FOREACH list.supportedOperations AS supop-»  
-                <td><a href="«supop.url.replaceFirst("/", "")»?«dao.forEntity.name.toLowerCase()»DbID=${«this.dao.forEntity.name.toLowerCase()».«this.dao.forEntity.name.toLowerCase()»DbID}">«supop.url.replaceFirst("/"+dao.forEntity.name.toUpperCase(), "")»</a></td>
+                «FOREACH list.supportedOperations AS supop-»
+                «IF !supop.operationKind.toString().matches("_create")-»  
+                <td><a href="«supop.url.replaceFirst("/", "")»?«dao.forEntity.name.toLowerCase()»DbID=${«this.dao.forEntity.name.toLowerCase()».«this.dao.forEntity.name.toLowerCase()»DbID}">«getOperationKindGer(supop)»</a></td>
+                «ENDIF-»
                 «ENDFOREACH-»
             «ENDFOREACH-» 
             </tr>
             </c:forEach>
         </tbody>
     </table>
-</body>
-</html>
-    «ENDIF-»
-«ENDDEFINE»   
-«REM»...and most probably here, too.«ENDREM»
+«ENDDEFINE»
+
+«DEFINE readOneOp FOR EntityController-»
+    <table>
+    «FOREACH dao.forEntity.attributes AS att-»
+        <tr>
+        «IF att.multiValued == false-»
+            <td><em>«att.name.toFirstUpper()»:</em></td>
+            «IF att.type.toString().matches("VOID")-»
+            <td><c:out value='${«dao.forEntity.name.toLowerCase()».«att.name.toLowerCase()»["«att.complexType.attributes.selectFirst(e|e.type.toString() == "OID").name.toLowerCase()»"]}'/></td>    
+            «ELSE-»
+            <td><c:out value='${«dao.forEntity.name.toLowerCase()»["«att.name.toLowerCase()»"]}'/></td>   
+            «ENDIF-»
+        «ENDIF-»
+        </tr>
+     «ENDFOREACH-» 
+    </table>   
+«ENDDEFINE»
+
+«DEFINE createOp FOR EntityController-»
+«ENDDEFINE»
